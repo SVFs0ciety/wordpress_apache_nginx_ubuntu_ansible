@@ -1,0 +1,30 @@
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+  become: yes
+
+- name: Install nginx
+  apt: name={{ item }} state=present
+  become: yes
+  with_items:
+    - nginx
+    - git
+
+- name: Start nginx
+  become: yes
+  service:
+    name: nginx
+    state: started
+
+- name: Apply Nginx configuration
+  template:
+    src: configs/nginx/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+
+- name: Copy file
+  template:
+    src: configs/nginx/default.j2
+    dest: /etc/nginx/sites-available/default
+
+  notify:
+    - restart nginx
+  become: yes

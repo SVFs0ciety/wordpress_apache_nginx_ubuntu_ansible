@@ -1,0 +1,6 @@
+---
+    - name: 'System update - Debian'    
+      when: ansible_os_family == "Debian"
+      apt:
+        update-cache: yes
+        force_apt_get: yes

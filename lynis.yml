@@ -1,0 +1,15 @@
+    - name: Add lynis repository 
+      shell:
+        cmd: echo "deb https://packages.cisofy.com/community/lynis/deb/ stable main" | sudo tee /etc/apt/sources.list.d/cisofy-lynis.list
+
+    - name: Download the public signing key
+      shell:
+        cmd: wget -O - https://packages.cisofy.com/keys/cisofy-software-public.key | sudo apt-key add -
+
+    - name: Update
+      apt: update_cache=yes
+
+    - name: Install Lynis
+      apt:
+        pkg:
+          - lynis

@@ -1,0 +1,26 @@
+- hosts: client
+  become: yes
+  tasks:
+    - name: System Update
+      include_tasks: update.yml
+
+    - name: Nginx Install
+      include_tasks: nginx1.yml
+
+    - name: PHP Install
+      include_tasks: php.yml
+
+    - name: Mysql Install
+      include_tasks: mysql.yml
+
+    - name: Maldet Install
+      include_tasks: maldet.yml
+
+    - name: CSF Install
+      include_tasks: csf.yml
+
+    - name: Lynis Install
+      include_tasks: lynis.yml
+
+    - name: WORDPRESS Install
+      include_tasks: wordpress.yml

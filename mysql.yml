@@ -1,0 +1,5 @@
+    - name: Install Mariadb
+      apt:
+        pkg:
+          - mariadb-server
+          - mariadb-client

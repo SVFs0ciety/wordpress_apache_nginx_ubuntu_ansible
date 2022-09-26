@@ -1,0 +1,42 @@
+    - name: WP Download Package
+      get_url:
+        url: https://wordpress.org/latest.tar.gz
+        dest: /usr/src/latest.tar.gz
+      register: output
+
+    - name: 'Extracting package'
+      when: output.changed == true
+      unarchive:
+        src: /usr/src/latest.tar.gz
+        dest: /var/www/html
+        remote_src: yes
+
+    - name: Chown user
+      shell:
+        cmd: chown -R www-data:www-data /var/www/html/wordpress/
+
+    - name: Chmod 755
+      shell:
+        cmd: find /var/www/html/wordpress -type d -exec chmod 755 {} \;
+
+    - name: Chmod 644
+      shell:
+        cmd: find /var/www/html/wordpress -type f -exec chmod 644 {} \;
+
+    - name: Rename wp-config
+      shell:
+        cmd: mv /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php
+
+    - name: Create Database && User WP
+      shell:
+        cmd: mysql -u root -pmEsh0chek -e "CREATE DATABASE wpdb; CREATE USER 'linux'@localhost IDENTIFIED BY 'mEsh0chek'; GRANT ALL PRIVILEGES ON wpdb.* TO linux@localhost IDENTIFIED BY 'mEsh0chek'; FLUSH PRIVILEGES;"
+
+    - name: Update Wordpress config file
+      lineinfile:
+        path: /var/www/html/wordpress/wp-config.php
+        regexp: "{{item.regexp}}"
+        line: "{{item.line}}"
+      with_items:
+        - {'regexp': "define\\( 'DB_NAME', '(.)+' \\);", 'line': "define( 'DB_NAME', 'wpdb' );"}
+        - {'regexp': "define\\( 'DB_USER', '(.)+' \\);", 'line': "define( 'DB_USER', 'linux' );"}
+        - {'regexp': "define\\( 'DB_PASSWORD', '(.)+' \\);", 'line': "define( 'DB_PASSWORD', 'mEsh0chek' );"}

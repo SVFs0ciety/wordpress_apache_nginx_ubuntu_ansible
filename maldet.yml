@@ -1,0 +1,28 @@
+    - name: 'Download Package'
+      get_url:
+        url: http://www.rfxn.com/downloads/maldetect-current.tar.gz
+        dest: /usr/src/maldetect-current.tar.gz
+      register: output
+
+    - name: Create LMD's download dir
+      file:
+        path: /usr/src/maldet
+        state: directory
+        recurse: yes
+
+    - name: 'Extracting package'
+      when: output.changed == true
+      unarchive:
+        src: /usr/src/maldetect-current.tar.gz
+        dest: /usr/src/maldet	
+        extra_opts: [--strip-components=1]
+        remote_src: yes
+
+    - name: 'Executing install script'
+      when: output.changed == true
+      shell: /usr/src/maldet/install.sh   chdir=/usr/src/maldet/
+
+    - name: 'Updating Maldet'
+      shell:
+        cmd: maldet -u && maldet -d
+
