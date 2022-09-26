@@ -1,0 +1,29 @@
+    - name: 'Download Package'
+      get_url:
+        url: https://download.configserver.com/csf.tgz
+        dest: /usr/src/csf.tgz
+      register: output
+    - name: 'Extracting package'
+      when: output.changed == true
+      unarchive:
+        src: /usr/src/csf.tgz
+        dest: /usr/src/
+        remote_src: yes
+    - name: 'Executing install script'
+      when: output.changed == true
+      shell:
+        cmd: sh install.sh
+        chdir: /usr/src/csf/
+    - name: 'Copy config file'
+      copy: 
+        src: configs/csf/csf.conf
+        dest: /etc/csf/csf.conf      
+    - name: 'Copy blocklists file'
+      copy:
+        src: configs/csf/csf.blocklists
+        dest: /etc/csf/csf.blocklists
+
+    - name: 'Copy blocklists file'
+      copy:
+        src: configs/csf/csf.allow
+        dest: /etc/csf/csf.allow
